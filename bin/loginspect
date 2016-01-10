@@ -1,0 +1,85 @@
+#!/usr/bin/env node
+
+'use strict';
+
+let spinner;
+
+const
+    program = require('commander'),
+    moment = require('moment'),
+    colors = require('colors'),
+    Spinner = require('cli-spinner').Spinner,
+
+    statsLib = require('../lib/stats'),
+    logLib = require('../lib/log'),
+    version = require('../package.json').version,
+
+    logEntryParser = new logLib.MysqlLogParser(),
+    logAnalyzer = new statsLib.LogAnalyzer(),
+    fileProcessor = new logLib.LogFileProcessor(logEntryParser, logAnalyzer);
+
+
+// Define "the program"
+program
+    .version(version)
+    .option('-l, --log [file]', 'The log file to analyze')
+    .option('-f, --from [data]', 'Analyze only log entries from a specified date [Y-m-d]')
+    .option('-t, --to [date]', 'Analyze only log entries up to a specified date [Y-m-d]')
+    .option('-v, --view [type]', 'Set output format for loginspect, either "json" or "cli"')
+    .option('-u, --captureUnknown', 'Whether or not to display raw data of unknown log entries')
+    .option('-c, --capture [number]', 'The amount of captured slowest log entries, defaults to '+statsLib.LogAnalyzer.DEFAULT_CAPTURE_SIZE)
+    .option('-q, --query [index]', 'Inspect a query from the top list (not supported by json view)')
+    .option('-n, --normalizedQuery [id]', 'Inspect a normalized query (not supported by json view)')
+    .parse(process.argv);
+
+
+
+// Sanitize input
+program.view = (program.view || 'cli').toLocaleLowerCase();
+program.capture = parseInt(program.capture || 0, 10) || statsLib.LogAnalyzer.DEFAULT_CAPTURE_SIZE;
+program.query = parseInt(program.query || 0, 10) || false;
+program.normalizedQuery = parseInt(program.normalizedQuery || 0, 10) || false;
+
+
+if (program.log) {
+
+    /*
+    Time the execution by monkey patching the program object and
+    let the view renderer display the time it took to analyze the log
+     */
+    program.beginTime = new Date().getTime();
+
+    // Turn on spinner
+    if (program.view === 'cli') {
+        spinner = new Spinner('Parsing file "'+program.log+'"');
+        spinner.setSpinnerString('|/-\\');
+        spinner.start();
+    }
+
+    // Do we want to look at entries within a given time span
+    fileProcessor.from = program.from ? moment(program.from+' 00:00:00').toDate() : false;
+    fileProcessor.to = program.to ? moment(program.to+' 23:59:59').toDate() : false;
+
+    // How many slowest queries do we want to capture
+    if (/^\d+$/.test(program.capture || '')) {
+        logAnalyzer.captureSize = parseInt(program.capture);
+    }
+
+    // Do we want to capture unknown entries
+    logAnalyzer.captureUnknownEntries = program.captureUnknown;
+
+    fileProcessor.readAndProcess(program.log)
+        .then(function() {
+            if (spinner) {
+                spinner.stop(true);
+            }
+            fileProcessor.renderResult(
+                program,
+                console.log,
+                console.error
+            );
+        });
+
+} else {
+    console.error('No log file specified, run -help'.red);
+}

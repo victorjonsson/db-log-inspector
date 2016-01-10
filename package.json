@@ -1,0 +1,33 @@
+{
+  "name": "db-log-inspector",
+  "version": "1.0.2",
+  "description": "Command line tool used to analyze MySql log files (including percona and MariaDB)",
+  "engines": {
+    "node": ">=4.1.1"
+  },
+  "dependencies": {
+    "cli-spinner": "^0.2.1",
+    "cli-table": "^0.3.1",
+    "colors": "^1.1.2",
+    "commander": "^2.9.0",
+    "lodash": "^3.10.1",
+    "moment": "^2.11.0",
+    "nodeunit": "^0.9.1"
+  },
+  "bin": {
+    "loginspect": "./bin/loginspect"
+  },
+  "scripts": {
+    "test": "./node_modules/nodeunit/bin/nodeunit ./test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/victorjonsson/db-log-inspector"
+  },
+  "author": {
+    "name": "Victor Jonsson",
+    "email": "kontakt@victorjonsson.se",
+    "url": "http://victorjonsson.se"
+  },
+  "license": "MIT"
+}
