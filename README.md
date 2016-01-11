@@ -22,7 +22,7 @@ SET timestamp=%NUMBER%;
 %SQL_STATEMENT%;
 ``` 
 
-**In a future version you will be able to define your own log format.**
+*In a future version you will be able to define your own log format.*
 
 #### Report summary
 
