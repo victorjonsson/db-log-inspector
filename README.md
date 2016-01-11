@@ -30,7 +30,7 @@ Get a report containing the following:
 - Start and end date of the report
 - The total amount of slow queries and average slow queries per day
 - Top list with the ten slowest queries found (add `-c 50` to get the 50 slowest queries)
-- Top list with most frequent (normalized queries)[#Inspecting-normalized-queries] and their average execution time
+- Top list with most frequent [normalized queries](#inspecting-normalized-queries) and their average execution time
 
 ```
 $ loginspect -l /var/log/mysql/slow.log
