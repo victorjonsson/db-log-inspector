@@ -2,12 +2,12 @@
 
 const
     normalizer = require('../lib/log/query-normalizer'),
-    someSqlGibberish = 'UPDATE Shippers.ShipperName \nCOUNT(Orders.OrderID) AS \t\n\n'+
+    someSqlGibberish = 'SELECT Shippers.ShipperName \nCOUNT(Orders.OrderID) AS \t\n\n'+
         "NumberOfOrders FROM Orders (SELECT gargamel FROM smurfarna WHERE a=     `sddsd`)"+
         ' AS groda FROM\nLEFT JOIN Shippers ON Orders.ShipperID=Shippers.ShipperID WHERE'+
         ' apa IN (32, "323", 12) AND testing IN (SELECT A FROM table) '+
         ' GROUP BY ShipperName ORDER BY sdkfp DESC LIMIT 0,20 LIMIT 10',
-    someOtherSqlGibberish = 'UPDATE column \t\n\n'+
+    someOtherSqlGibberish = 'SELECT column \t\n\n'+
         "NumberOfOrders FROM Orders (SELECT gargamel FROM smurfarna WHERE a=     2323)"+
         ' AS groda FROM\nLEFT JOIN Shippers ON Orders.ShipperID=\`val\` WHERE'+
         ' apa IN (col.name) AND testing IN (SELECT A FROM table AS apa) '+
@@ -24,7 +24,7 @@ module.exports = {
 
     testNormalizedQueryCreation: function (test) {
         const
-            expectedSql = 'UPDATE ? FROM Orders (SELECT ? FROM smurfarna WHERE a=?)' +
+            expectedSql = 'SELECT ? FROM Orders (SELECT ? FROM smurfarna WHERE a=?)' +
                 ' FROM LEFT JOIN Shippers ON Orders.ShipperID=? WHERE apa IN ? ' +
                 'AND testing IN (SELECT ? FROM table) GROUP BY ShipperName',
             normalizedA = normalizer.normalize(someSqlGibberish),
@@ -34,12 +34,12 @@ module.exports = {
         test.equals(
             expectedSql,
             normalizedA.sql,
-            `Normalized sql not correct`
+            'Normalized sql not correct'
         );
         test.equals(
             normalizedB.sql,
             normalizedA.sql,
-            `The two different sql statement does not generate the same normalized sql`
+            'The two different sql statement does not generate the same normalized sql'
         );
 
         test.equals(true, normalizedA.hash ? true:false);
@@ -69,6 +69,21 @@ module.exports = {
         str = 'WHERE col IN (SELECT gargamel FROM smurfarna WHERE a=     4394) AS kmsdk';
         expected = 'WHERE col IN (SELECT gargamel FROM smurfarna WHERE a=?) AS kmsdk';
         test.equals(expected, normalizer.commands.removeValues(str));
+
+        test.done();
+    },
+
+    testNormalizingUpdate: function(test) {
+        const sql = "UPDATE log SET something = 'groda' WHERE other='apa'",
+            expected = "UPDATE log SET something =? WHERE other=?";
+
+        let result = normalizer.commands.removeValues(sql);
+        test.equals(expected, result);
+
+        //test.equals(expected, normalizer.normalize(sql).sql);
+        Object.keys(normalizer.commands).forEach(function(commandName) {
+            test.equals(expected, normalizer.commands[commandName](result), 'Command '+commandName);
+        });
 
         test.done();
     }
