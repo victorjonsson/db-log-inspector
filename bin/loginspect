@@ -48,8 +48,9 @@ if (program.log) {
     program.beginTime = new Date().getTime();
 
     // Turn on spinner
+    let spinner = false;
     if (program.view === 'cli') {
-        const spinner = new Spinner('Parsing file "'+program.log+'"');
+        spinner = new Spinner('Parsing file "'+program.log+'"');
         spinner.setSpinnerString('|/-\\');
         spinner.start();
     }
