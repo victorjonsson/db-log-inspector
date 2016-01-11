@@ -18,7 +18,7 @@
     "loginspect": "./bin/loginspect"
   },
   "scripts": {
-    "test": "./node_modules/nodeunit/bin/nodeunit ./test/test.js"
+    "test": "node ./node_modules/nodeunit/bin/nodeunit ./test/test.js"
   },
   "repository": {
     "type": "git",

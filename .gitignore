@@ -7,6 +7,8 @@ pids
 *.pid
 *.seed
 
+# IDE config files
+.idea*
 
 # Coverage directory used by tools like istanbul
 coverage
