@@ -57,7 +57,7 @@ You can increase the size of the top list of slow queries by using the argument 
 #### Inspecting normalized queries
 
 The normalization of queries turns a statement like this `SELECT col FROM table WHERE x=1 AND y=0` into this
-`SELECT ? FROM table WHERE x=? AND y=?`. This can be really useful when trying to find which type of question
+`SELECT ? FROM table WHERE x=? AND y=?`. This can be really useful when trying to find which type of statements
 causing you most trouble.
 
 When generating a report you will get a list of the most frequent normalized queries.
@@ -75,7 +75,7 @@ NORMALIZED QUERIES:
 ...
 ```
 
-To view the details of a normalized query, such as the normalized query and an example statement, you use the flag `-n`.
+To view the details of a normalized query, such as the normalized sql and an example statement, you use the flag `-n`.
 
 ```
 $ loginspect -f 2015-12-00 -t 2015-12-31 -n m3l91307399ff040am31283cb9cdlmq1
