@@ -75,9 +75,7 @@ if (program.log) {
     // Do we want to inspect a certain normalized query
     logAnalyzer.captureNormalizedQuery = program.normalizedQuery;
 
-    fileProcessor
-
-        .readAndProcess(program.log)
+    fileProcessor.readAndProcess(program.log)
         .then(function() {
             if (typeof bar == 'object') {
                 console.log('\n');

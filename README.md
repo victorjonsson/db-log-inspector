@@ -48,7 +48,7 @@ $ loginspect -l /var/log/mysql/slow.log -f 2015-01-01 -t 2015-12-31
 
 #### Export data
 
-By adding the argument `-v json` the console program will output the result as valid json.  
+By adding the argument `-v json` the console program will output the result as valid json.
 
 #### Get a larger top list of slow queries
 
@@ -56,7 +56,31 @@ You can increase the size of the top list of slow queries by using the argument 
 
 #### Inspecting normalized queries
 
-Normalized queries...
+The normalization of queries turns a statement like this `SELECT col FROM table WHERE x=1 AND y=0` into this
+`SELECT ? FROM table WHERE x=? AND y=?`. This can be really useful when trying to find which type of question
+causing you most trouble.
+
+When generating a report you will get a list of the most frequent normalized queries.
+
+```
+$ loginspect -f 2015-12-00 -t 2015-12-31
+...
+
+NORMALIZED QUERIES:
+| ID                                | Executions    | Avg time  |
+| --------------------------------- |:-------------:| ---------:|
+| 4dd91307399ff040a579b83cb9cdd798  |  921          | 2 minutes |
+| m3l91307399ff040am31283cb9cdlmq1  |  701          | 1 minute  |
+| l32oe307399ff040ame2l83cb9cd4mp0  |  645          | 22 sec    |
+...
+
+```
+
+To view the details of a normalized query you use the flag `-n`.
+
+```
+$ loginspect -f 2015-12-00 -t 2015-12-31 -n m3l91307399ff040am31283cb9cdlmq1
+```
 
 ## Troubleshooting 
 
