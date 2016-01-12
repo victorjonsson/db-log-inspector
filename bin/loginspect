@@ -3,10 +3,11 @@
 'use strict';
 
 const
+    fs = require('fs'),
     program = require('commander'),
     moment = require('moment'),
     colors = require('colors'),
-    Spinner = require('cli-spinner').Spinner,
+    ProgressBar = require('progress'),
 
     statsLib = require('../lib/stats'),
     logLib = require('../lib/log'),
@@ -47,11 +48,16 @@ if (program.log) {
     program.beginTime = new Date().getTime();
 
     // Turn on spinner
-    let spinner = false;
+    let bar = false;
     if (program.view === 'cli') {
-        spinner = new Spinner('Parsing file "'+program.log+'"');
-        spinner.setSpinnerString('|/-\\');
-        spinner.start();
+        bar = new ProgressBar('Parsing [:bar] :percent', {
+            width: 50,
+            total: fs.statSync(program.log).size
+        });
+
+        fileProcessor.on('entryCaptured', function(entryData) {
+            bar.tick(entryData.length);
+        });
     }
 
     // Do we want to look at entries within a given time span
@@ -69,10 +75,12 @@ if (program.log) {
     // Do we want to inspect a certain normalized query
     logAnalyzer.captureNormalizedQuery = program.normalizedQuery;
 
-    fileProcessor.readAndProcess(program.log)
+    fileProcessor
+
+        .readAndProcess(program.log)
         .then(function() {
-            if (typeof spinner == 'object') {
-                spinner.stop(true);
+            if (typeof bar == 'object') {
+                console.log('\n');
             }
             fileProcessor.renderResult(
                 program,
