@@ -73,10 +73,9 @@ NORMALIZED QUERIES:
 | m3l91307399ff040am31283cb9cdlmq1  |  701          | 1 minute  |
 | l32oe307399ff040ame2l83cb9cd4mp0  |  645          | 22 sec    |
 ...
-
 ```
 
-To view the details of a normalized query you use the flag `-n`.
+To view the details of a normalized query, such as the normalized query and an example statement, you use the flag `-n`.
 
 ```
 $ loginspect -f 2015-12-00 -t 2015-12-31 -n m3l91307399ff040am31283cb9cdlmq1
