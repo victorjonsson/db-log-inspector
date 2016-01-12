@@ -79,11 +79,19 @@ To view the details of a normalized query, such as the normalized query and an e
 
 ```
 $ loginspect -f 2015-12-00 -t 2015-12-31 -n m3l91307399ff040am31283cb9cdlmq1
+Average time: 22 seconds
+Executions: 645
+
+NORMALIZED QUERY:
+SELECT ? FROM table WHERE x IN (SELECT ? FROM other_table WHERE y=?)
+
+EXAMPLE:
+SELECT x, id, name FROM table WHERE name IN (SELECT name FROM other_table WHERE y=321)
 ```
 
 ## Troubleshooting 
 
-Lorem te ipsum
+Lorem te ipsum...
 
 
 
