@@ -95,7 +95,7 @@ You can increase the size of the top list of slow queries by using the argument 
 
 #### Inspecting normalized queries
 
-The normalization of queries turns a statement like this `SELECT col FROM table WHERE x=1 AND y=0` into this
+The normalization of queries turns a statement like `SELECT col FROM table WHERE x=1 AND y=0` into this
 `SELECT ? FROM table WHERE x=? AND y=?`. This can be really useful when trying to find which type of statements
 causing you most trouble.
 
