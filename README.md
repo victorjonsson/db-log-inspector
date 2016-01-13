@@ -1,4 +1,4 @@
-# db-log-inspector
+# db-log-inspector :mag:
 Command line tool used to analyze MySql log files (including Percona and MariaDB)
 
 ## Install
@@ -34,6 +34,45 @@ Get a report containing the following:
 
 ```
 $ loginspect -l /var/log/mysql/slow.log
+
+From:           Fri 09, Sep 2011
+To:             Tue 05, Jan 2016
+Entries:        140789  (2 unknown entries)
+Average:        89.1 entries per day
+Execution time: 17 seconds
+
+ SLOWEST QUERIES:
+┌────┬──────────────────┬────────────────────────────────────────────────────┬──────────┐
+│ #  │ Date             │ SQL                                                │ Time     │
+├────┼──────────────────┼────────────────────────────────────────────────────┼──────────┤
+│ 1  │ Tue 03, Dec 2013 │ SELECT * FROM applies WHERE name LIKE `%antwerp%`  │ 16 hours │
+├────┼──────────────────┼────────────────────────────────────────────────────┼──────────┤
+│ 2  │ Wed 18, Sep 2013 │ select cs.id, cu.id AS customerId, cu              │ 12 hours │
+│    │                  │ .companyName, cu.ssn, c.ssn cus                    │          │
+│    │                  │ tomerSsn, s.service, cu.balance, cs.service        │          │
+│    │                  │ ... (run -q 2 to view entire SQL statement)        │          │
+├────┼──────────────────┼────────────────────────────────────────────────────┼──────────┤
+│ 3  │ Mon 05, May 2014 │ select cs.id, cu.id AS customerId, cu              │ 6 hours  │
+│    │                  │ eId, se.name as serviceName, comp.name as companyN │          │
+│    │                  │ ame, comp.orgNr as orgNr,cu.name as sellerName,    │          │
+│    │                  │ ... (run -q 3 to view entire SQL statement)        │          │
+├────┼──────────────────┼────────────────────────────────────────────────────┼──────────┤
+
+
+ NORMALIZED QUERIES:
+┌──────────────────────────────────┬────────────┬──────────────┐
+│ ID                               │ Executions │ Average time │
+├──────────────────────────────────┼────────────┼──────────────┤
+│ 45f60cd9e6f35ccf6a3f61b96b5d99eb │ 15082      │ 2 minutes    │
+├──────────────────────────────────┼────────────┼──────────────┤
+│ d542e82e23f71354ff542ab27676b766 │ 9262       │ 3 minutes    │
+├──────────────────────────────────┼────────────┼──────────────┤
+│ 3ae4bb208afa5627c303dd9f7b6e6257 │ 8627       │ 2 minutes    │
+├──────────────────────────────────┼────────────┼──────────────┤
+│ 4fdb7c80840f59eac83c2ca31d8d0a62 │ 8626       │ 1 minute     │
+├──────────────────────────────────┼────────────┼──────────────┤
+...
+Showing 30 of 2053 normalized queries (use "-n [ID]" to inspect a specific normalized query)
 ```
 
 #### Report summary for a specified date
@@ -70,8 +109,8 @@ NORMALIZED QUERIES:
 | ID                                | Executions    | Avg time  |
 | --------------------------------- |:-------------:| ---------:|
 | 4dd91307399ff040a579b83cb9cdd798  |  921          | 2 minutes |
-| m3l91307399ff040am31283cb9cdlmq1  |  701          | 1 minute  |
-| l32oe307399ff040ame2l83cb9cd4mp0  |  645          | 22 sec    |
+| m3l91307399ff040am31283cb9cdlmq1  |  701          | 22 sec    |
+| l32oe307399ff040ame2l83cb9cd4mp0  |  645          | 1 minute  |
 ...
 ```
 
@@ -91,7 +130,7 @@ SELECT x, id, name FROM table WHERE name IN (SELECT name FROM other_table WHERE 
 
 ## Troubleshooting 
 
-Lorem te ipsum...
+The report summary will give you information about how many log entries that couldn't become parsed. Add the flag `-u` to get hold of the raw data of these log entries.
 
 
 
