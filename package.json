@@ -1,5 +1,5 @@
 {
-  "name": "db-log-inspector",
+  "name": "loginspect",
   "version": "1.0.3",
   "description": "Command line tool used to analyze MySql log files (including percona and MariaDB)",
   "engines": {
