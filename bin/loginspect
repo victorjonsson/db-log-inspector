@@ -7,6 +7,7 @@ const
     program = require('commander'),
     moment = require('moment'),
     colors = require('colors'),
+    babar = require('babar'),
     ProgressBar = require('progress'),
 
     statsLib = require('../lib/stats'),
@@ -24,6 +25,7 @@ program
     .option('-l, --log [file]', 'The log file to analyze')
     .option('-f, --from [val]', 'Analyze only log entries from a specified date [Y-m-d]')
     .option('-t, --to [val]', 'Analyze only log entries up to a specified date [Y-m-d]')
+    .option('-c, --chart [type]', 'Display a bar chart displaying entries per day')
     .option('-v, --view [val]', 'Set output format for loginspect, either "json", "cli" or "unknown"')
     .option('-u, --captureUnknown', 'Whether or not to display raw data of unknown log entries')
     .option('-c, --capture [val]', 'The amount of captured slowest log entries, defaults to '+statsLib.LogAnalyzer.DEFAULT_CAPTURE_SIZE)
@@ -47,7 +49,7 @@ if (program.log) {
      */
     program.beginTime = new Date().getTime();
 
-    // Turn on spinner
+    // Display progress bar showing parsing process
     let bar = false;
     if (program.view === 'cli') {
         bar = new ProgressBar('Parsing [:bar] :percent', {
@@ -55,8 +57,17 @@ if (program.log) {
             total: fs.statSync(program.log).size
         });
 
-        fileProcessor.on('entryCaptured', function(entryData) {
+        fileProcessor.on('beforeEntryParse', function(entryData) {
             bar.tick(entryData.length);
+        });
+    }
+
+    // Add entries to bar chart generator
+    let chart = false;
+    if (program.chart) {
+        chart = new statsLib.Chart();
+        fileProcessor.on('entryParsed', function(entry) {
+            chart.addEntry(entry);
         });
     }
 
@@ -77,14 +88,23 @@ if (program.log) {
 
     fileProcessor.readAndProcess(program.log)
         .then(function() {
-            if (typeof bar == 'object') {
+            if (bar instanceof ProgressBar) {
                 console.log('\n');
             }
-            fileProcessor.renderResult(
-                program,
-                console.log,
-                console.error
-            );
+
+            if (chart instanceof statsLib.Chart) {
+                console.log(babar(chart.data, {
+                    color: 'green',
+                    yFractions: 1
+                }));
+            } else {
+                fileProcessor.renderResult(
+                    program,
+                    console.log,
+                    console.error
+                );
+            }
+
         });
 
 } else {
