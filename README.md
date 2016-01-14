@@ -1,4 +1,4 @@
-# db-log-inspector :mag:
+# loginspect :mag:
 Command line tool used to analyze MySql log files (including Percona and MariaDB)
 
 ## Install
