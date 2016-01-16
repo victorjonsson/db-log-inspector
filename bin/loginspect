@@ -11,6 +11,7 @@ const
 
     statsLib = require('../lib/stats'),
     logLib = require('../lib/log'),
+    viewRenderers = require('../lib/view'),
     version = require('../package.json').version,
 
     logEntryParser = new logLib.MysqlLogParser(),
@@ -25,7 +26,7 @@ program
     .option('-f, --from [val]', 'Analyze only log entries from a specified date [Y-m-d]')
     .option('-t, --to [val]', 'Analyze only log entries up to a specified date [Y-m-d]')
     .option('-C, --chart [type]', 'Display a bar chart displaying entries per day')
-    .option('-v, --view [val]', 'Set output format for loginspect, either "json", "cli" or "unknown"')
+    .option('-v, --view [val]', 'Set output format for loginspect, either "json", "cli" or "chart"')
     .option('-u, --captureUnknown', 'Whether or not to display raw data of unknown log entries')
     .option('-c, --capture [val]', 'The amount of captured slowest log entries, defaults to '+statsLib.LogAnalyzer.DEFAULT_CAPTURE_SIZE)
     .option('-q, --query [val]', 'Inspect a query from the top list (not supported by json view)')
@@ -61,14 +62,8 @@ if (program.log) {
         });
     }
 
-    // Add entries to bar chart generator
-    let chart = false;
-    if (program.chart) {
-        chart = new statsLib.Chart();
-        fileProcessor.on('entryParsed', function(entry) {
-            chart.addEntry(entry);
-        });
-    }
+    // Gather daily stats used by chart renderer
+    logAnalyzer.gatherDailyStats = program.view === 'chart';
 
     // Do we want to look at entries within a given time span
     fileProcessor.from = program.from ? moment(program.from+' 00:00:00').toDate() : false;
@@ -85,22 +80,33 @@ if (program.log) {
     // Do we want to inspect a certain normalized query
     logAnalyzer.captureNormalizedQuery = program.normalizedQuery;
 
+    // Process file and render result
     fileProcessor.readAndProcess(program.log)
         .then(function() {
+
             if (bar instanceof ProgressBar) {
                 console.log('\n');
             }
 
-            if (chart instanceof statsLib.Chart) {
-                chart.render(console.log);
-            } else {
-                fileProcessor.renderResult(
-                    program,
-                    console.log,
-                    console.error
-                );
+            let viewRenderer;
+            switch((program.view || '').toLowerCase()) {
+                case 'json':
+                    viewRenderer = viewRenderers.json;
+                    break;
+                case 'chart':
+                    viewRenderer = viewRenderers.cliChart;
+                    break;
+                default:
+                    viewRenderer = viewRenderers.cli;
+                    break;
             }
 
+            viewRenderer(
+                program,
+                logAnalyzer.logStats,
+                console.log,
+                console.error
+            );
         });
 
 } else {
