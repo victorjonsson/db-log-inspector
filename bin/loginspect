@@ -7,7 +7,6 @@ const
     program = require('commander'),
     moment = require('moment'),
     colors = require('colors'),
-    babar = require('babar'),
     ProgressBar = require('progress'),
 
     statsLib = require('../lib/stats'),
@@ -25,7 +24,7 @@ program
     .option('-l, --log [file]', 'The log file to analyze')
     .option('-f, --from [val]', 'Analyze only log entries from a specified date [Y-m-d]')
     .option('-t, --to [val]', 'Analyze only log entries up to a specified date [Y-m-d]')
-    .option('-c, --chart [type]', 'Display a bar chart displaying entries per day')
+    .option('-C, --chart [type]', 'Display a bar chart displaying entries per day')
     .option('-v, --view [val]', 'Set output format for loginspect, either "json", "cli" or "unknown"')
     .option('-u, --captureUnknown', 'Whether or not to display raw data of unknown log entries')
     .option('-c, --capture [val]', 'The amount of captured slowest log entries, defaults to '+statsLib.LogAnalyzer.DEFAULT_CAPTURE_SIZE)
@@ -93,10 +92,7 @@ if (program.log) {
             }
 
             if (chart instanceof statsLib.Chart) {
-                console.log(babar(chart.data, {
-                    color: 'green',
-                    yFractions: 1
-                }));
+                chart.render(console.log);
             } else {
                 fileProcessor.renderResult(
                     program,
