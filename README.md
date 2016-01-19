@@ -89,13 +89,17 @@ $ loginspect -l /var/log/mysql/slow.log -f 2015-01-01 -t 2015-12-31
 
 By adding the argument `-v json` the console program will output the result as valid json.
 
+#### Bar chart
+
+By adding the argument `-v chart` you will get a bar chart displaying the number of slow queries per day
+
 #### Get a larger top list of slow queries
 
 You can increase the size of the top list of slow queries by using the argument `-c [NUMBER]` 
 
 #### Inspecting normalized queries
 
-The normalization of queries turns a statement like `SELECT col FROM table WHERE x=1 AND y=0` into this
+The normalization of queries turns a statement like `SELECT col FROM table WHERE x=1 AND y=0` into 
 `SELECT ? FROM table WHERE x=? AND y=?`. This can be really useful when trying to find which type of statements
 causing you most trouble.
 
