@@ -11,7 +11,7 @@ const
 
     statsLib = require('../lib/stats'),
     logLib = require('../lib/log'),
-    viewRenderers = require('../lib/view'),
+    views = require('../lib/view'),
     version = require('../package.json').version,
 
     logEntryParser = new logLib.MysqlLogParser(),
@@ -25,7 +25,6 @@ program
     .option('-l, --log [file]', 'The log file to analyze')
     .option('-f, --from [val]', 'Analyze only log entries from a specified date [Y-m-d]')
     .option('-t, --to [val]', 'Analyze only log entries up to a specified date [Y-m-d]')
-    .option('-C, --chart [type]', 'Display a bar chart displaying entries per day')
     .option('-v, --view [val]', 'Set output format for loginspect, either "json", "cli" or "chart"')
     .option('-u, --captureUnknown', 'Whether or not to display raw data of unknown log entries')
     .option('-c, --capture [val]', 'The amount of captured slowest log entries, defaults to '+statsLib.LogAnalyzer.DEFAULT_CAPTURE_SIZE)
@@ -88,20 +87,20 @@ if (program.log) {
                 console.log('\n');
             }
 
-            let viewRenderer;
+            let renderer;
             switch((program.view || '').toLowerCase()) {
                 case 'json':
-                    viewRenderer = viewRenderers.json;
+                    renderer = views.json;
                     break;
                 case 'chart':
-                    viewRenderer = viewRenderers.cliChart;
+                    renderer = views.cliChart;
                     break;
                 default:
-                    viewRenderer = viewRenderers.cli;
+                    renderer = views.cli;
                     break;
             }
 
-            viewRenderer(
+            renderer(
                 program,
                 logAnalyzer.logStats,
                 console.log,
