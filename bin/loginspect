@@ -49,15 +49,15 @@ if (program.log) {
      */
     program.beginTime = new Date().getTime();
 
-    // Display progress bar showing parsing process
+    // Display progress bar showing parsing progress
     let bar = false;
-    if (program.view === 'cli') {
+    if (program.view !== 'json') {
         bar = new ProgressBar('Parsing [:bar] :percent', {
             width: 50,
             total: fs.statSync(program.log).size
         });
 
-        fileProcessor.on('beforeEntryParse', function(entryData) {
+        fileProcessor.on('beforeEntryParsed', function(entryData) {
             bar.tick(entryData.length);
         });
     }
@@ -71,7 +71,7 @@ if (program.log) {
 
     // How many slowest queries do we want to capture
     if (/^\d+$/.test(program.capture || '')) {
-        logAnalyzer.captureSize = parseInt(program.capture);
+        logAnalyzer.numSlowestQueriesToCapture = parseInt(program.capture);
     }
 
     // Do we want to capture unknown entries
