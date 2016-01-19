@@ -126,10 +126,10 @@ Average time: 22 seconds
 Executions: 645
 
 NORMALIZED QUERY:
-SELECT ? FROM table WHERE x IN (SELECT ? FROM other_table WHERE y=?)
+SELECT ? FROM table WHERE ? IN (SELECT ? FROM other_table WHERE x=?)
 
 EXAMPLE:
-SELECT x, id, name FROM table WHERE name IN (SELECT name FROM other_table WHERE y=321)
+SELECT id, name FROM table WHERE name IN (SELECT name FROM other_table WHERE x=321)
 ```
 
 ## Troubleshooting 
